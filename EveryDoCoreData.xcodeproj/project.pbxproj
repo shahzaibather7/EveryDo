@@ -15,6 +15,7 @@
 		115431911F44DF0600D45042 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1154318F1F44DF0600D45042 /* Main.storyboard */; };
 		115431931F44DF0600D45042 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 115431921F44DF0600D45042 /* Assets.xcassets */; };
 		115431961F44DF0600D45042 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 115431941F44DF0600D45042 /* LaunchScreen.storyboard */; };
+		1154319F1F44E66500D45042 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1154319E1F44E66500D45042 /* CoreData.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		115431921F44DF0600D45042 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		115431951F44DF0600D45042 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		115431971F44DF0600D45042 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1154319E1F44E66500D45042 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1154319F1F44E66500D45042 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,6 +52,7 @@
 			children = (
 				1154317F1F44DF0600D45042 /* EveryDoCoreData */,
 				1154317E1F44DF0600D45042 /* Products */,
+				1154319D1F44E66500D45042 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -85,6 +89,14 @@
 				115431811F44DF0600D45042 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1154319D1F44E66500D45042 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1154319E1F44E66500D45042 /* CoreData.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

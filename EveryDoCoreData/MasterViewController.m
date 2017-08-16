@@ -8,6 +8,8 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import "TableViewCell.h"
+
 
 @interface MasterViewController ()
 
@@ -17,7 +19,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+ 
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
@@ -40,30 +42,83 @@
 
 - (void)insertNewObject:(id)sender {
     NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-    Event *newEvent = [[Event alloc] initWithContext:context];
-        
+
     // If appropriate, configure the new managed object.
-    newEvent.timestamp = [NSDate date];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Add a ToDo Task" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
+    __block UITextField *titleTextField;
+    __block UITextField *todoDescripTextField;
+    __block UITextField *priorityNumberTextField;
+
+//Set textfield title
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        titleTextField = textField;
+        titleTextField.placeholder = @"To Do Task Title";
+    }];
+//Set textfield description
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        todoDescripTextField = textField;
+        todoDescripTextField.placeholder = @"Task Description";
+    }];
+//Set textfield prioritynumber
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        priorityNumberTextField = textField;
+        priorityNumberTextField.placeholder = @"Priority Number";
+    }];
+    
+    
+   // NSArray *todoAlertTitles = @[@"Test" , @"Test2"];
+
+    [alert addAction:[UIAlertAction actionWithTitle:@"Submit" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
-    // Save the context.
-    NSError *error = nil;
-    if (![context save:&error]) {
-        // Replace this implementation with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, error.userInfo);
-        abort();
-    }
+
+        
+        ToDo *todoItem = [[ToDo alloc] initWithContext:context];
+        todoItem.title = titleTextField.text;
+        todoItem.todoDescription = todoDescripTextField.text;
+        todoItem.priorityNumber = priorityNumberTextField.text.intValue;
+        
+       
+        
+        // Save the context.
+        NSError *error = nil;
+        if (![context save:&error]) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+            abort();
+        }
+        
+        
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+        
+    }]];
+    
+    
+    [self presentViewController:alert animated:YES completion:nil];
+    
 }
 
 
 #pragma mark - Segues
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:@"showDetail"]) {
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"showDetail"])
+    {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        Event *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
+      //  Event *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        ToDo *todoObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-        [controller setDetailItem:object];
+        [controller setDetailItem:todoObject];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
@@ -85,9 +140,15 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    Event *event = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [self configureCell:cell withEvent:event];
+    ToDo *todoItem = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    [self configureCell:cell withToDo:todoItem];
+   
+    
+    
     return cell;
+
+
+
 }
 
 
@@ -113,32 +174,41 @@
 }
 
 
-- (void)configureCell:(UITableViewCell *)cell withEvent:(Event *)event {
-    cell.textLabel.text = event.timestamp.description;
+//CONFIGURE CELL HERE
+
+
+
+-(void)configureCell:( TableViewCell*)cell withToDo : (ToDo*) todoItem{
+    cell.textLabel.text = todoItem.title;
 }
+
+
 
 
 #pragma mark - Fetched results controller
 
-- (NSFetchedResultsController<Event *> *)fetchedResultsController
+
+
+- (NSFetchedResultsController<ToDo *> *)fetchedResultsController
 {
-    if (_fetchedResultsController != nil) {
-        return _fetchedResultsController;
+    if (_todoFetchedResultsController != nil) {
+        return _todoFetchedResultsController;
     }
     
-    NSFetchRequest<Event *> *fetchRequest = Event.fetchRequest;
+    NSFetchRequest<ToDo *> *fetchRequest = ToDo.fetchRequest;
     
     // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     
     // Edit the sort key as appropriate.
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:NO];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"todoDescription" ascending:NO];
 
     [fetchRequest setSortDescriptors:@[sortDescriptor]];
     
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
-    NSFetchedResultsController<Event *> *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Master"];
+    
+    NSFetchedResultsController<ToDo *> *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Master"];
     aFetchedResultsController.delegate = self;
     
     NSError *error = nil;
@@ -149,9 +219,15 @@
         abort();
     }
     
-    _fetchedResultsController = aFetchedResultsController;
-    return _fetchedResultsController;
+    _todoFetchedResultsController = aFetchedResultsController;
+    return _todoFetchedResultsController;
 }
+
+
+
+
+
+
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
@@ -175,7 +251,7 @@
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject
+- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)todoItem
        atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath
 {
@@ -191,7 +267,7 @@
             break;
             
         case NSFetchedResultsChangeUpdate:
-            [self configureCell:[tableView cellForRowAtIndexPath:indexPath] withEvent:anObject];
+            [self configureCell:[tableView cellForRowAtIndexPath:indexPath] withToDo:todoItem];
             break;
             
         case NSFetchedResultsChangeMove:
